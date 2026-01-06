@@ -1,107 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8" />
-  <title>Birmingham Quadrangle Maps (1959 vs 2024)</title>
-
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-    #map {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+  <title>Test Tiles</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>html,body,#map{height:100%;margin:0}</style>
 </head>
-
 <body>
   <div id="map"></div>
-
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- qgis2web polygon layers -->
-  <script src="Jeffersoncountyshapefile_4.js"></script>
-  <script src="Jeffersoncountymunicipalities_3.js"></script>
-
   <script>
-    // Create map (geographic CRS for OSM)
-    const map = L.map('map', {
-      center: [33.5, -86.8], // approximate Birmingham lat/lon
-      zoom: 10
-    });
-
-    // --------------------
-    // Raster tile layers
-    // --------------------
+    const map = L.map('map', { crs: L.CRS.Simple, minZoom: 0, maxZoom: 5 });
     const tiles1959 = L.tileLayer('tiles_1959/{z}/{x}/{y}.jpg', {
       tileSize: 512,
-      maxZoom: 5,
-      noWrap: true
-    });
+      noWrap: true,
+      maxZoom: 5
+    }).addTo(map);
 
-    const tiles2024 = L.tileLayer('tiles_2024/{z}/{x}/{y}.jpg', {
-      tileSize: 512,
-      maxZoom: 5,
-      noWrap: true
-    });
-
-    // --------------------
-    // OpenStreetMap base map
-    // --------------------
-    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
-      maxZoom: 19
-    });
-
-    // Add default layers
-    osm.addTo(map);       // OSM visible first (background)
-    tiles1959.addTo(map); // 1959 tiles on top
-
-    // --------------------
-    // Vector layers (qgis2web)
-    // --------------------
-    const jeffersonCounty = L.geoJSON(json_Jeffersoncountyshapefile_4, {
-      style: { color: '#ff0000', weight: 2, fill: false }
-    });
-
-    const municipalities = L.geoJSON(json_Jeffersoncountymunicipalities_3, {
-      style: { color: '#0000ff', weight: 1, fill: false }
-    });
-
-    // Add vectors by default
-    jeffersonCounty.addTo(map);
-    municipalities.addTo(map);
-
-    // --------------------
-    // Layer control
-    // --------------------
-    L.control.layers(
-      {
-        "OpenStreetMap": osm,
-        "Quadrangle Maps 1959": tiles1959,
-        "Quadrangle Maps 2024": tiles2024
-      },
-      {
-        "Jefferson County Boundary": jeffersonCounty,
-        "Municipal Boundaries": municipalities
-      }
-    ).addTo(map);
-
-    // Optional: restrict map to approximate Birmingham bounds
-    const bounds = [
-      [33.2, -87.1], // southwest corner
-      [33.8, -86.4]  // northeast corner
-    ];
-    map.setMaxBounds(bounds);
+    // center the map
+    map.fitBounds([[0,0],[14903,17878]]);
   </script>
 </body>
 </html>
