@@ -1,24 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Test Tiles</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <style>html,body,#map{height:100%;margin:0}</style>
+  <title>Birmingham Quadrangle Maps (1959 vs 2024)</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
+
 <body>
   <div id="map"></div>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    const map = L.map('map', { crs: L.CRS.Simple, minZoom: 0, maxZoom: 5 });
-    const tiles1959 = L.tileLayer('tiles_1959/{z}/{x}/{y}.jpg', {
-      tileSize: 512,
-      noWrap: true,
-      maxZoom: 5
-    }).addTo(map);
 
-    // center the map
-    map.fitBounds([[0,0],[14903,17878]]);
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- qgis2web polygon layers -->
+  <script src="Jeffersoncountyshapefile_4.js"></script>
+  <script src="Jeffersoncountymunicipalities_3.js"></script>
+
+  <script>
+    // --------------------
+    // Create map in image CRS
+    // --------------------
+    const map = L.map('map', {
+      crs: L.CRS.Simple,
+      minZoom: 0,
+      maxZoom: 5
+    });
+
+    // --------------------
+    // Raster tile layers (PNG)
+    // --------------------
+    const tiles1959 = L.tileLayer('tiles_1959/{z}/{x}/{y}.png', {
+      tileSize: 512,
+      maxZoom: 5,
+      noWrap: true
+    });
+
+    const tiles2024 = L.tileLayer('tiles_2024/{z}/{x}/{y}.png', {
+      tileSize: 512,
+      maxZoom: 5,
+      noWrap: true
+    });
+
+    // Add default layer
+    tiles1959.addTo(map);
+
+    // --------------------
+    // Vector layers (qgis2web)
+    // --------------------
+    const jeffersonCounty = L.geoJSON(json_Jeffersoncountyshapefile_4, {
+      style: { color: '#ff0000', weight: 2, fill: false }
+    });
+
+    const municipalities = L.geoJSON(json_Jeffersoncountymunicipalities_3, {
+      style: { color: '#0000ff', weight: 1, fill: false }
+    });
+
+    // Add polygons by default
+    jeffersonCounty.addTo(map);
+    municipalities.addTo(map);
+
+    // --------------------
+    // Layer control
+    // --------------------
+    L.control.layers(
+      {
+        "Quadrangle Maps 1959": tiles1959,
+        "Quadrangle Maps 2024": tiles2024
+      },
+      {
+        "Jefferson County Boundary": jeffersonCounty,
+        "Municipal Boundaries": municipalities
+      }
+    ).addTo(map);
+
+    // --------------------
+    // Fit map to tile extent
+    // --------------------
+    map.fitBounds([[0, 0], [14903, 17878]]);
   </script>
 </body>
 </html>
