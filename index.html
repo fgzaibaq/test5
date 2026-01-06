@@ -44,17 +44,21 @@
 
     // --------------------
     // Raster tile layers (PNG)
+    // Note: your tiles are stored as tiles_1959/{z}/{x}/{y}.png
+    //       there is no y folder, so {y} corresponds to filename directly
     // --------------------
     const tiles1959 = L.tileLayer('tiles_1959/{z}/{x}/{y}.png', {
       tileSize: 512,
       maxZoom: 5,
-      noWrap: true
+      noWrap: true,
+      tms: false // standard Leaflet orientation
     });
 
     const tiles2024 = L.tileLayer('tiles_2024/{z}/{x}/{y}.png', {
       tileSize: 512,
       maxZoom: 5,
-      noWrap: true
+      noWrap: true,
+      tms: false
     });
 
     // Add default layer
@@ -65,15 +69,11 @@
     // --------------------
     const jeffersonCounty = L.geoJSON(json_Jeffersoncountyshapefile_4, {
       style: { color: '#ff0000', weight: 2, fill: false }
-    });
+    }).addTo(map);
 
     const municipalities = L.geoJSON(json_Jeffersoncountymunicipalities_3, {
       style: { color: '#0000ff', weight: 1, fill: false }
-    });
-
-    // Add polygons by default
-    jeffersonCounty.addTo(map);
-    municipalities.addTo(map);
+    }).addTo(map);
 
     // --------------------
     // Layer control
